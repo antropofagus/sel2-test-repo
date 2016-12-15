@@ -7,13 +7,13 @@ describe 'Customer account' do
   before :each do
     @driver = Selenium::WebDriver.for :chrome
     @wait = Selenium::WebDriver::Wait.new :timeout => 10
-
     @driver.navigate.to "http://localhost:8080/litecart/en/"
   end
   after :each do
     @driver.quit
   end
   it 'should not login user without account' do
+
     @driver.find_element(:name, 'email').send_keys 'unexisting@email.com'
     @driver.find_element(:name, 'password').send_keys '12345678'
     @driver.find_element(:name, 'login').click
@@ -34,6 +34,7 @@ describe 'Customer account' do
 
   it 'should create new account' do
     customer = CUSTOMER
+    @driver.navigate.to "http://localhost:8080/litecart/en/"
     @driver.find_element(:css, "a[href='http://localhost:8080/litecart/en/create_account']").click
     @wait.until{@driver.title == 'Create Account | My Store'}
     @driver.find_element(:name, 'firstname').send_keys customer[:name]
@@ -63,5 +64,17 @@ describe 'Customer account' do
        success_msg = @driver.find_element(:css, '#notices > div.success')
        expect(success_msg.text).to eql("You are now logged in as #{valid[:name]} #{valid[:lastname]}.")
      }
+  end
+
+  it 'should login to admin account with valid login/password' do
+    admin = ACCOUNT[:admin]
+    @driver.navigate.to 'http://localhost:8080/litecart/admin'
+    @driver.find_element(:name, 'username').send_keys admin[:login]
+    @driver.find_element(:name, 'password').send_keys admin[:password]
+    @driver.find_element(:name, 'login').click
+    @wait.until{
+      msg = @driver.find_element(:css, '#notices > div.success')
+      expect(msg.text).to eql 'You are now logged in as admin'
+    }
   end
 end

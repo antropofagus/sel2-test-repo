@@ -11,6 +11,6 @@ ACCOUNT = {
     },
     :admin => {
         :login => 'admin',
-        :password => 'password'
+        :password => 'admin'
     }
 }
