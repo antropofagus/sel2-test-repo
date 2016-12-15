@@ -13,9 +13,6 @@ describe 'Customer account' do
     @driver.quit
   end
 
-
-
-
   it 'should redirect new customers to create account form' do
     create_account_link = @driver.find_element(:css, "a[href='http://localhost:8080/litecart/en/create_account']")
     create_account_link.click
@@ -71,27 +68,4 @@ describe 'Customer account' do
   end
 
 
-  it 'should login to admin account with valid login/password' do
-    admin = ACCOUNT[:admin]
-    @driver.navigate.to 'http://localhost:8080/litecart/admin'
-    @driver.find_element(:name, 'username').send_keys admin[:login]
-    @driver.find_element(:name, 'password').send_keys admin[:password]
-    @driver.find_element(:name, 'login').click
-    @wait.until{
-      msg = @driver.find_element(:css, '#notices > div.success')
-      expect(msg.text).to eql 'You are now logged in as admin'
-    }
-  end
-
-  it 'should not login to admin account without password' do
-    admin = ACCOUNT[:admin]
-    @driver.navigate.to 'http://localhost:8080/litecart/admin'
-    @driver.find_element(:name, 'username').send_keys admin[:login]
-    @driver.find_element(:name, 'password').send_keys ''
-    @driver.find_element(:name, 'login').click
-    @wait.until{
-      msg = @driver.find_element(:css, '#notices > div.errors:nth-child(1)')
-      expect(msg.text).to eql 'Wrong combination of username and password or the account does not exist.'
-    }
-  end
 end
