@@ -12,16 +12,9 @@ describe 'Customer account' do
   after :each do
     @driver.quit
   end
-  it 'should not login user without account' do
 
-    @driver.find_element(:name, 'email').send_keys 'unexisting@email.com'
-    @driver.find_element(:name, 'password').send_keys '12345678'
-    @driver.find_element(:name, 'login').click
-    @wait.until {
-      error = @driver.find_element(:css, '#notices > div.errors')
-      expect(error.text).to eql('Wrong password or the account is disabled, or does not exist')
-    }
-  end
+
+
 
   it 'should redirect new customers to create account form' do
     create_account_link = @driver.find_element(:css, "a[href='http://localhost:8080/litecart/en/create_account']")
@@ -55,6 +48,17 @@ describe 'Customer account' do
       expect(success_msg.text).to eql 'Your customer account has been created.'}
   end
 
+  it 'should not login as customer with invalid login/password' do
+
+    @driver.find_element(:name, 'email').send_keys 'unexisting@email.com'
+    @driver.find_element(:name, 'password').send_keys '12345678'
+    @driver.find_element(:name, 'login').click
+    @wait.until {
+      error = @driver.find_element(:css, '#notices > div.errors')
+      expect(error.text).to eql('Wrong password or the account is disabled, or does not exist')
+    }
+  end
+
   it 'should login as customer with valid login/password' do
      valid = ACCOUNT[:valid]
      @driver.find_element(:name, 'email').send_keys valid[:login]
@@ -66,6 +70,7 @@ describe 'Customer account' do
      }
   end
 
+
   it 'should login to admin account with valid login/password' do
     admin = ACCOUNT[:admin]
     @driver.navigate.to 'http://localhost:8080/litecart/admin'
@@ -75,6 +80,18 @@ describe 'Customer account' do
     @wait.until{
       msg = @driver.find_element(:css, '#notices > div.success')
       expect(msg.text).to eql 'You are now logged in as admin'
+    }
+  end
+
+  it 'should not login to admin account without password' do
+    admin = ACCOUNT[:admin]
+    @driver.navigate.to 'http://localhost:8080/litecart/admin'
+    @driver.find_element(:name, 'username').send_keys admin[:login]
+    @driver.find_element(:name, 'password').send_keys ''
+    @driver.find_element(:name, 'login').click
+    @wait.until{
+      msg = @driver.find_element(:css, '#notices > div.errors:nth-child(1)')
+      expect(msg.text).to eql 'Wrong combination of username and password or the account does not exist.'
     }
   end
 end
